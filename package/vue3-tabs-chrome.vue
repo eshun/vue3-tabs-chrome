@@ -58,6 +58,7 @@ import {
   PropType,
   nextTick,
   h,
+  watch,
   onUnmounted,
   ComponentPublicInstance
 } from 'vue'
@@ -367,12 +368,17 @@ export default defineComponent({
      */
     const addTab = (...newTabs: Array<Tab>) => {
       const { insertToAfter, modelValue, tabs } = props
-      if (insertToAfter) {
-        const i = tabs.findIndex((tab) => tab.key === modelValue)
-        tabs.splice(i + 1, 0, ...newTabs)
-      } else {
-        tabs.push(...newTabs)
-      }
+      newTabs.map((newTab: Tab) => {
+        if (tabs.some((tab) => tab.key === newTab.key)) {
+          return;
+        }
+        if (insertToAfter) {
+          const i = tabs.findIndex((tab) => tab.key === modelValue)
+          tabs.splice(i + 1, 0, newTab)
+        } else {
+          tabs.push(newTab)
+        }
+      })
 
       nextTick(() => {
         init()
@@ -545,6 +551,13 @@ export default defineComponent({
     onUnmounted(() => {
       window.removeEventListener('resize', handleResize)
       if (timer) window.clearTimeout(timer)
+    })
+
+    watch(props.tabs, () => {
+      nextTick(() => {
+        init()
+        doLayout()
+      })
     })
 
     return {

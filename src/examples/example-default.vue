@@ -43,8 +43,14 @@ export default defineComponent({
     }
 
     const handleAdd = () => {
+      // const key = 'tab1'
+      // tabRef.value.addTab({
+      //   label: 'New Tab',
+      //   key
+      // })
       const key = 'tab' + Date.now()
-      tabRef.value.addTab({
+
+      tabs && tabs.push({
         label: 'New Tab',
         key
       })
