@@ -55,6 +55,7 @@ import {
   ref,
   reactive,
   onMounted,
+  onUpdated,
   PropType,
   nextTick,
   h,
@@ -551,6 +552,13 @@ export default defineComponent({
     onUnmounted(() => {
       window.removeEventListener('resize', handleResize)
       if (timer) window.clearTimeout(timer)
+    })
+
+    onUpdated(() => {
+      nextTick(() => {
+        init()
+        doLayout()
+      })
     })
 
     watch(props.tabs, () => {
