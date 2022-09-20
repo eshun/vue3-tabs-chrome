@@ -163,6 +163,7 @@ export default defineComponent({
   setup(props, context) {
     const $refs = reactive<Refs>({})
     const tabWidth = ref<number>(0)
+    const isDragging = ref<boolean>(false)
 
     /**
      * 计算单个 tab 的宽度
@@ -193,6 +194,7 @@ export default defineComponent({
       if (isMousedownActive) {
         emit('update:modelValue', tab.key)
       }
+      isDragging.value = true
       emit('dragstart', e, tab, i)
     }
 
@@ -231,6 +233,7 @@ export default defineComponent({
           break
         }
       }
+      isDragging.value = true
       emit('dragging', e, tab, i)
     }
 
@@ -300,6 +303,7 @@ export default defineComponent({
       }, 50)
       setTimeout(() => {
         _instance.element.classList.remove('move')
+        isDragging.value = false
         emit('dragend', e, tab, i)
       }, 200)
       return false
@@ -556,15 +560,19 @@ export default defineComponent({
 
     onUpdated(() => {
       nextTick(() => {
-        init()
-        doLayout()
+        if (isDragging.value === false) {
+          init()
+          doLayout()
+        }
       })
     })
 
     watch(props.tabs, () => {
       nextTick(() => {
-        init()
-        doLayout()
+        if (isDragging.value === false) {
+          init()
+          doLayout()
+        }
       })
     })
 
